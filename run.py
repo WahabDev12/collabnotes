@@ -1,10 +1,12 @@
 import tkinter as tk
 from db import Database
-from tkinter import PhotoImage, Toplevel, messagebox
+from tkinter import PhotoImage, StringVar, Toplevel, messagebox
 from tkinter import ttk
 from ttkthemes import ThemedTk
 import os
 from PIL import Image,ImageTk
+
+from auth import *
 
 class MainLogic(tk.Frame):
 
@@ -13,8 +15,7 @@ class MainLogic(tk.Frame):
         master.geometry("400x350")
         master.configure(bg = "#10C5A7")
         self.main_screen()
-
-
+        self.saved_user_details = {}
     
     def main_screen(self):
         # Create widgets for main page here
@@ -23,11 +24,10 @@ class MainLogic(tk.Frame):
         self.main_caption = tk.Label(self.master, text = "WELCOME TO NOTES APP", 
         font=('Consolas', 20), bg = "#10C5A7", fg = "white")
         self.main_caption.place( x = 50, y = 0)
-        self.main_reg_btn = tk.Button(self.master, text = "REGISTER",bg = "#10C5A7",fg="white")
+        self.main_reg_btn = tk.Button(self.master, text = "LOGIN",bg = "#10C5A7",fg="white", command = self.login_view)
         self.main_reg_btn.place(x = 130, y = 60,width = 120, height = 40)
-        self.main_log_btn = tk.Button(self.master, text = "LOGIN",bg = "#10C5A7", fg="white", command = self.login_view)
+        self.main_log_btn = tk.Button(self.master, text = "REGISTER",bg = "#10C5A7", fg="white", command = self.register_view)
         self.main_log_btn.place(x = 130, y = 130,width = 120, height = 40)
-
 
     
     def connect_database(self):
@@ -49,9 +49,65 @@ class MainLogic(tk.Frame):
         # Load image icon and display
         self.load = Image.open(os.path.abspath("notes_icon.png"))
         self.render = ImageTk.PhotoImage(self.load)
-        self.img = tk.Label(self.notes_view, image=self.render,height = 59,bg = "#10C5A7")
+        self.img = tk.Label(self.notes_view, image = self.render,height = 59,bg = "#10C5A7")
         self.img.place(x = 570, y = 10)
 
+    def register_view(self):
+        self.register_view = Toplevel(root)
+        self.register_view.geometry("400x350")
+        self.register_view.configure(bg = "#10C5A7")
+        self.connect_database()
+        self.register_view.title("REGISTER PAGE")
+        self.register_view_widgets()
+
+    # WIDGETS FOR LOGIN VIEW
+
+    def register_view_widgets(self):
+        # Create widgets for login page here
+        self.master.title("REGISTER PAGE")
+        self.main_caption = tk.Label(self.register_view, text = "REGISTER NEW ACCOUNT", 
+        font=('Consolas', 20), bg = "#10C5A7", fg = "white")
+        self.main_caption.place( x = 50, y = 0)
+
+        # initializing the textvaraibles for register
+        self.username = StringVar()
+        self.password = StringVar()
+        self.email = StringVar()
+        # Username Label
+        self.reg_username_label = tk.Label(self.register_view, text = "Username: ", bg = "#10C5A7",font=('Helvetica', 15))
+        self.reg_username_label.place(x = 130 , y = 40 )
+        # Username Entry box
+        self.reg_username = tk.Entry(self.register_view, textvariable=self.username)
+        self.reg_username.place(x = 130 , y = 80, height = 25)
+        # Email Label
+        self.reg_email_label = tk.Label(self.register_view, text = "Email: ",bg = "#10C5A7",font=('Helvetica', 15))
+        self.reg_email_label.place(x = 130, y = 110 )
+        # Email Entry box
+        self.reg_email = tk.Entry(self.register_view, textvariable=self.email)
+        self.reg_email.place(x = 130, y = 150, height = 25)
+        # Password Label
+        self.password_label = tk.Label(self.register_view, text = "Password: ", bg = "#10C5A7",font=('Helvetica', 15))
+        self.password_label.place(x = 130 , y = 190 )
+        # Password Entry box
+        self.reg_password = tk.Entry(self.register_view, textvariable=self.password)
+        self.reg_password.place(x = 130 , y = 230, height = 25)
+        # Registration button
+        self.main_reg_btn = tk.Button(self.register_view, text = "REGISTER", bg = "#10C5A7", fg="white", command = self.add_user)
+        self.main_reg_btn.place(x = 130, y = 270,width = 120, height = 40)
+    
+
+    # getting registeration details and registering user
+    def add_user(self):
+        email_info = self.email.get()
+        username_info = self.username.get()
+        password_info = self.password.get()
+        newUser = Users(username_info, email_info, password_info)
+
+        App.load_file_data()
+        App.register_user(newUser)
+        App.add_registered_user_to_file()
+        
+                                                                                                    
     def login_view(self):
         self.login_view = Toplevel(root)
         self.login_view.geometry("400x350")
@@ -60,21 +116,56 @@ class MainLogic(tk.Frame):
         self.login_view.title("LOGIN PAGE")
         self.login_view_widgets()
 
-    # WIDGETS FOR LOGIN VIEW
 
     def login_view_widgets(self):
-        # Create widgets for login page here
-        self.master.title("LANDING PAGE")
+        # Create widgets for REGISTER page here
+        self.master.title("LOGIN ACCOUNT")
 
-        self.main_caption = tk.Label(self.login_view, text = "LOGIN", 
+        # Initializing text variables
+        self.loginusername = StringVar()
+        self.loginpassword = StringVar()
+
+
+        # Caption
+        self.main_caption = tk.Label(self.login_view, text = "SIGN IN", 
         font=('Consolas', 20), bg = "#10C5A7", fg = "white")
-        self.main_caption.place( x = 50, y = 0)
-        self.username_label = tk.Label(self.login_view, text = "Username : ")
-        self.username_label.place(x = 130 , y = 120 )
-        self.login_username = tk.Entry(self.login_view)
-        self.login_username.place(x = 130 , y = 140)
-        self.main_log_btn = tk.Button(self.login_view, text = "LOGIN",bg = "#10C5A7", fg="white", command = self.notes_view)
-        self.main_log_btn.place(x = 130, y = 160,width = 120, height = 40)
+        self.main_caption.place( x = 140, y = 0)
+        # Login email label and entry
+        self.username_label = tk.Label(self.login_view, text = "Username: ", bg = "#10C5A7",font=('Helvetica', 15))
+        self.username_label.place(x = 130 , y = 40 )
+        self.login_username = tk.Entry(self.login_view, textvariable=self.loginusername)
+        self.login_username.place(x = 130 , y = 80, height = 25)
+        # Login password label and entry 
+        self.password_label = tk.Label(self.login_view, text = "Password: ", bg = "#10C5A7",font=('Helvetica', 15))
+        self.password_label.place(x = 130 , y = 110 )
+        self.login_password = tk.Entry(self.login_view, textvariable=self.loginpassword)
+        self.login_password.place(x = 130 , y = 150, height = 25)
+        # Login Button
+        self.main_log_btn = tk.Button(self.login_view, text = "LOGIN", bg = "#10C5A7", fg="white", command = self.verify_login)
+        self.main_log_btn.place(x = 130, y = 190,width = 120, height = 40)
+
+
+    # methods to verify login details
+    def load_data_from_registered_users(self):
+        f = open('registered_users.csv', 'r')
+        lines = f.readlines()
+        for line  in lines:
+            line = line.strip()
+            line_array = line.split(',')
+            self.saved_user_details[line_array[0]] = line_array[2]
+
+
+    def verify_login(self):
+        login_username_info = self.loginusername.get()
+        password_info = self.loginpassword.get()
+
+        print(self.saved_user_details)
+        if login_username_info in self.saved_user_details and self.saved_user_details[login_username_info] == password_info:
+                self.notes_view()
+                print('successfully login')
+        else:
+            print('Login failed')
+
 
     # WIDGETS FOR NOTES APP VIEW
     def notes_view_widgets(self):
@@ -86,9 +177,9 @@ class MainLogic(tk.Frame):
             # Title
             self.title = tk.StringVar()
             self.title_caption = tk.Label(
-                self.notes_view, fg="#0D2E28",bg="#10C5A7", text='Title of Note', font=('bold', 14), pady=20)
+            self.notes_view, fg="#0D2E28",bg="#10C5A7", text='Title of Note', font=('bold', 14), pady=20)
             self.title_caption.place(x = 300, y = 50)
-            self.title_entry = tk.Entry(self.notes_view, textvariable=self.title,font=('bold', 14))
+            self.title_entry = tk.Entry(self.notes_view, textvariable = self.title,font=('bold', 14))
             self.title_entry.place(x = 190, y = 110, width=400,height = 30)
 
             # Description
@@ -97,7 +188,7 @@ class MainLogic(tk.Frame):
                 self.notes_view,fg="#0D2E28",bg="#10C5A7", text='Note Description (150 words max)', font=('bold', 14))
             self.description_label.place(x = 250, y = 160)
             self.description_entry = tk.Entry(
-                self.notes_view, textvariable=self.description,font=('bold', 11))
+                self.notes_view, textvariable = self.description,font=('bold', 11))
             self.description_entry.place(x = 190, y = 200,width=400, height=90)
 
             # Buttons
@@ -167,7 +258,6 @@ class MainLogic(tk.Frame):
     def update_note(self):
             db.update_data(self.selected_note[0], self.title.get(), self.description.get())
             self.display_data()
-            return messagebox.showinfo("SUCCESS","Updated Note")
 
     def delete_note(self):
             db.delete_data(self.selected_note[0])
@@ -198,6 +288,7 @@ class MainLogic(tk.Frame):
 root = tk.Tk()
 
 app = MainLogic(master=root)
+app.load_data_from_registered_users()
 
 if __name__ == "__main__":
     app.mainloop()

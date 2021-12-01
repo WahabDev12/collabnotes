@@ -1,8 +1,8 @@
 import sqlite3
 import datetime
 
-currentDateTime = datetime.datetime.now()
-today_date = currentDateTime.strftime('%d-%m-%Y')
+currentDateTime = datetime.datetime.now() # Gets the current datetime
+today_date = currentDateTime.strftime('%d-%m-%Y') # Returns only month,year and day
 print(today_date)
 
 
@@ -28,9 +28,9 @@ class Database:
         self.cur.execute("DELETE FROM notes WHERE id=?", (id,))
         self.conn.commit()
 
-    def update_data(self, id, title, description):
-        self.cur.execute("UPDATE notes SET title = ?, description = ? WHERE id = ?",
-                         (title, description,id))
+    def update_data(self, id, title, description,date = today_date):
+        self.cur.execute("UPDATE notes SET title = ?, description = ?, date = ? WHERE id = ?",
+                         (title, description,date,id))
         self.conn.commit()
 
     def __del__(self):
