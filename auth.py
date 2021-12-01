@@ -54,4 +54,4 @@ class Authentication:
 
 
 
-App = Authentication()
+auth = Authentication()
