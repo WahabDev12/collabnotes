@@ -7,6 +7,7 @@ print(today_date)
 
 
 class Database:
+    '''A database to create a table for the notes, select data for action like delete, update, and insert'''
     def __init__(self, db):
         self.conn = sqlite3.connect(db)
         self.cur = self.conn.cursor()

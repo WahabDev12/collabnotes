@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "cc87884bdf64adf893d770f5da98d7dc7b0f0ad33dc5657bef392358b115a7dd"
+            "sha256": "98dea33cd013b6a17be3c93de8e1655092d9bdc4878311104758a0971200cd19"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -70,6 +70,13 @@
             ],
             "index": "pypi",
             "version": "==0.1.0"
+        },
+        "tksheet": {
+            "hashes": [
+                "sha256:7422ff65a58acf858a245b8eaeaebfa13c3b9ee800b91dfb94769e57a8135734"
+            ],
+            "index": "pypi",
+            "version": "==5.2.8"
         },
         "ttkthemes": {
             "hashes": [
